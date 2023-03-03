@@ -12,3 +12,11 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+# Deploy (to Github-Pages)
+
+Install the deployment package  ```npm i angular-cli-ghpages --save-dev``` 
+
+Run ```ng build --configuration production --base-href "https://ifl-camp.github.io/MetricSDS/" ``` and configure the sources to the github hosting repository.
+
+Run ```npx angular-cli-ghpages --dir=dist/metric-tutorial``` to push the sources on the ```gh-pages``` branch of the repository.
