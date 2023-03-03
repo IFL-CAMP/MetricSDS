@@ -1,5 +1,5 @@
 # MetricSDS
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.1. 
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.1. The github.io page is in this [link](https://ifl-camp.github.io/MetricSDS/)
 
 ## Development server
 
