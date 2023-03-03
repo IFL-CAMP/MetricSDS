@@ -1,6 +1,8 @@
 # MetricSDS
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.3.1. The github.io page is in this [link](https://ifl-camp.github.io/MetricSDS/)
 
+This project is based on the work from Clément Playout et al. [Link](https://clementpla.github.io/SegmentationMetricTutorial/welcome)
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
