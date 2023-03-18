@@ -13,39 +13,32 @@ import { Phase } from './phase';
 export class SurgicalPhaseComponent implements OnInit {
 
   isDragging: boolean = false;
-  listPhasePrediction: Array<Phase>;
   predictionArr: Array<number>;
   isNew: boolean = true;
   labelArr: Array<number>;
   video_count : number = 1;
   isVideoUploaded: boolean = false;
-  segment_arr_pred : Array<number>;
-  segment_arr_label : Array<number>;
   selectedFile: File;
-  listPhaseGt: Array<Phase>;
   activePhase?: Phase;
   startPosition: number;
-  nFrames: number = 99;
-  framerate = 24;
   tool: string = 'grab';
-  localUrl: any[]
   @ViewChild("videoPlayer", { static: false }) videoplayer: ElementRef;
-  videoPlayerCtx:HTMLVideoElement
   files: any = ['dominant_class_mostly_predicted.json', 'less_dominant_prediction.json',
-                'multi_phase_missing.json', 'one_missing_label.json', 'one_missing_prediction.json', 'underperformed_overlap.json', 'data_fully_micro.json'];
+    'multi_phase_missing.json', 'one_missing_label.json', 'one_missing_prediction.json', 'underperformed_overlap.json', 'data_fully_micro.json'];
 
 
   constructor(
-    public scoreService: ScoresService,
-    public classService: ClassesService,
-    public UICtrlService: ControlUIService
+      public scoreService: ScoresService,
+      public classService: ClassesService,
+      public UICtrlService: ControlUIService
   ) {
-    this.buildDefaultSetup()
+    if(this.scoreService.canBuild) this.buildDefaultSetup();
   }
   ngOnInit(): void {}
   buildDefaultSetup(){
-    this.listPhasePrediction = new Array<Phase>(3);
-    this.listPhaseGt = new Array<Phase>(3);
+    this.scoreService.nFrames = 99;
+    this.scoreService.listPhasePrediction = new Array<Phase>(3);
+    this.scoreService.listPhaseGt = new Array<Phase>(3);
 
     let n_samples = 3;
     let width = 99 / n_samples;
@@ -59,9 +52,9 @@ export class SurgicalPhaseComponent implements OnInit {
         previous: previous,
         exists: true,
       };
-      this.listPhasePrediction[i] = previous;
+      this.scoreService.listPhasePrediction[i] = previous;
       if (i > 0) {
-        this.listPhasePrediction[i - 1].next = previous;
+        this.scoreService.listPhasePrediction[i - 1].next = previous;
       }
     }
     previous = null;
@@ -74,22 +67,22 @@ export class SurgicalPhaseComponent implements OnInit {
         previous: previous,
         exists: true,
       };
-      this.listPhaseGt[i] = previous;
+      this.scoreService.listPhaseGt[i] = previous;
       if (i > 0) {
-        this.listPhaseGt[i - 1].next = previous;
+        this.scoreService.listPhaseGt[i - 1].next = previous;
       }
     }
     this.classService.setClasses([0, 1, 2]);
     this.classService.setCurrentClass(0);
 
     this.scoreService.initConfMat();
-    if(!this.isVideoUploaded || this.isNew) this.updateScore();
+    if(!this.isVideoUploaded || this.isNew) this.scoreService.updateVideoScore();
 
   }
 
   addClass() {
     this.classService.addClass();
-    this.updateScore();
+    this.scoreService.updateVideoScore();
   }
   changeActiveClass(classIndex: number) {
     this.classService.currentClass = classIndex;
@@ -106,6 +99,7 @@ export class SurgicalPhaseComponent implements OnInit {
     };
     this.video_count = file.length;
     this.isNew = false; // disabled setup
+    this.scoreService.canBuild = false;
     if (this.video_count > 1) { //Multiple Videos
       this.scoreService.final_multi_result = new Map();
       this.isVideoUploaded = true;
@@ -137,19 +131,21 @@ export class SurgicalPhaseComponent implements OnInit {
           this.predictionArr = this.predictionArr.concat(repeated);
         }
         if(i == 0) first_pred_arr = this.predictionArr;
+        this.scoreService.predictionArray = first_pred_arr;
+        this.scoreService.groundtruthArray = first_label_arr;
         this.fillDefaultData(this.scoreService.selectedVideo, first_pred_arr, first_label_arr);
         this.scoreService.final_pred_array.set(i, this.predictionArr);
         const uniquePredCount = new Set(this.predictionArr).size;
         const uniqueLabelCount = new Set(this.labelArr).size;
         const uniqueCount = Math.max(uniquePredCount, uniqueLabelCount);
-            this.classService.setClasses([...Array(uniqueCount).keys()]);
-            this.scoreService.initConfMat();
-            this.scoreService.updateConfusionMatrixFromArrayMultiVideos(
-              this.predictionArr,
-              this.labelArr,
-              i,
-              this.video_count
-            );
+        this.classService.setClasses([...Array(uniqueCount).keys()]);
+        this.scoreService.initConfMat();
+        this.scoreService.updateConfusionMatrixFromArrayMultiVideos(
+            this.predictionArr,
+            this.labelArr,
+            i,
+            this.video_count
+        );
       }
     }
     if (this.video_count == 1) { // Single Videos
@@ -177,8 +173,8 @@ export class SurgicalPhaseComponent implements OnInit {
           this.predictionArr,
           this.labelArr
       );
-      this.nFrames = this.predictionArr.length;
-      this.buildPhaseSetup(this.predictionArr, this.labelArr);
+      this.scoreService.nFrames = this.predictionArr.length;
+      this.scoreService.buildPhaseSetup(this.predictionArr, this.labelArr);
     }
   }
 
@@ -186,6 +182,7 @@ export class SurgicalPhaseComponent implements OnInit {
     this.selectedFile = event.target.files[0];
     const fileReader = new FileReader();
     fileReader.readAsText(this.selectedFile, "UTF-8");
+    if(this.scoreService.selectedFile) this.scoreService.selectedFile="";
     fileReader.onload = () => {
       if (typeof fileReader.result === "string") {
         const file = JSON.parse(fileReader.result);
@@ -198,7 +195,7 @@ export class SurgicalPhaseComponent implements OnInit {
   }
 
   downloadCSV() {
-    let csvData = this.convertToCSV(this.segment_arr_label, this.segment_arr_pred);
+    let csvData = this.convertToCSV(this.scoreService.segment_arr_label, this.scoreService.segment_arr_pred);
     let blob = new Blob(['\ufeff' + csvData], { type: 'text/csv;charset=utf-8;' });
     let dwldLink = document.createElement("a");
     let url = URL.createObjectURL(blob);
@@ -226,7 +223,6 @@ export class SurgicalPhaseComponent implements OnInit {
 
 
   segmentArrayPhase(array: number[]) {
-
     let segments: any[] = [];
     let currentSegment: any[] = [array[0]];
 
@@ -245,9 +241,10 @@ export class SurgicalPhaseComponent implements OnInit {
   //dropdown list handler
   handleVideoSelection(event: any) {
     this.scoreService.isSelectedVideo = true;
-    let video_number = event;
+    this.scoreService.selectedVideo = event;
+    this.scoreService.isMulti = true; //TODO:is it required for tab changing
     let video_score = new Array<Score>();
-    let item = this.scoreService.final_multi_result.get(video_number) || [];
+    let item = this.scoreService.final_multi_result.get(this.scoreService.selectedVideo) || [];
     for(let i=0; i<item.length; i++) {
       let args = {
         name: item[i].name,
@@ -258,18 +255,21 @@ export class SurgicalPhaseComponent implements OnInit {
       };
       video_score.push(new Score(args));
     }
-    let prediction = this.scoreService.final_pred_array.get(video_number) || [];
-    let groundtruth = this.scoreService.final_label_array.get(video_number) || [];
-    this.nFrames = prediction.length;
-    this.segment_arr_label = groundtruth;
-    this.segment_arr_pred = prediction;
-    this.scoreService.selectedVideo = video_number;
+    let prediction = this.scoreService.final_pred_array.get(this.scoreService.selectedVideo) || [];
+    let groundtruth = this.scoreService.final_label_array.get(this.scoreService.selectedVideo) || [];
+    this.predictionArr = prediction;
+    this.labelArr = groundtruth;
+    this.scoreService.predictionArray = prediction;
+    this.scoreService.groundtruthArray = groundtruth;
+    this.scoreService.nFrames = prediction.length;
+    this.scoreService.segment_arr_label = groundtruth;
+    this.scoreService.segment_arr_pred = prediction;
     this.scoreService.fillOneMetricTable(video_score);
-    this.buildMultiPhaseSetup(prediction, groundtruth, video_number);
+    this.scoreService.buildPhaseSetup(prediction, groundtruth);
   }
 
   fillDefaultData(video_number: number, prediction: Array<number>, groundtruth: Array<number>) {
-    this.nFrames = prediction.length;
+    this.scoreService.nFrames = prediction.length;
     let video_score = new Array<Score>();
     let item = this.scoreService.final_multi_result.get(video_number) || [];
     for(let i=0; i<item.length; i++) {
@@ -283,124 +283,9 @@ export class SurgicalPhaseComponent implements OnInit {
       video_score.push(new Score(args));
     }
     this.scoreService.fillOneMetricTable(video_score);
-    this.segment_arr_pred = prediction;
-    this.segment_arr_label = groundtruth;
-    this.buildMultiPhaseSetup(prediction, groundtruth, video_number);
-  }
-
-  buildPhaseSetup(prediction: Array<number>, label: Array<number>){
-    this.listPhasePrediction = new Array<Phase>(new Set(prediction).size);
-    this.listPhaseGt = new Array<Phase>(new Set(label).size);
-
-    var prediction_segments = this.segmentArrayPhase(prediction);
-    var label_segments = this.segmentArrayPhase(label);
-    let n_pred_samples = prediction_segments.length;
-    let pred_width = 100 / n_pred_samples;
-    let previous = null;
-    let index  = 0;
-    for (let i = 0; i < n_pred_samples; i++) {
-      let width_pred = prediction_segments[i].length;
-      previous = {
-        start: index,
-        width: width_pred,
-        label: prediction_segments[i][0],
-        next: null,
-        previous: previous,
-        exists: true,
-      };
-
-      this.listPhasePrediction[i] = previous;
-      if (i > 0) {
-        this.listPhasePrediction[i - 1].next = previous;
-      }
-      index = index + width_pred;
-    }
-    previous = null;
-    let n_label_samples = label_segments.length;
-    //let width_label = 100 / n_label_samples;
-    let label_index = 0;
-    for (let i = 0; i < n_label_samples; i++) {
-      let width_label = label_segments[i].length;
-      previous = {
-        start: label_index,
-        width: width_label,
-        label: label_segments[i][0],
-        next: null,
-        previous: previous,
-        exists: true,
-      };
-      this.listPhaseGt[i] = previous;
-      if (i > 0) {
-        this.listPhaseGt[i - 1].next = previous;
-      }
-      label_index = label_index + width_label;
-    }
-    const uniquePredCount = new Set(this.predictionArr).size;
-    const uniqueLabelCount = new Set(this.labelArr).size;
-    const uniqueCount = Math.max(uniquePredCount, uniqueLabelCount)
-    this.classService.setClasses([...Array(uniqueCount).keys()]);
-    this.classService.setCurrentClass(0);
-
-    this.scoreService.initConfMat();
-    this.updateScore();
-
-  }
-
-  buildMultiPhaseSetup(prediction: Array<number>, label: Array<number>, video_id:number){
-    this.listPhasePrediction = new Array<Phase>(new Set(prediction).size);
-    this.listPhaseGt = new Array<Phase>(new Set(label).size);
-    var prediction_segments = this.segmentArrayPhase(prediction);
-    var label_segments = this.segmentArrayPhase(label);
-    let n_pred_samples = prediction_segments.length;
-    let pred_width = 100 / n_pred_samples;
-    let previous = null;
-    let index  = 0;
-    for (let i = 0; i < n_pred_samples; i++) {
-      let width_pred = prediction_segments[i].length;
-      previous = {
-        start: index,
-        width: width_pred,
-        label: prediction_segments[i][0],
-        next: null,
-        previous: previous,
-        exists: true,
-      };
-
-      this.listPhasePrediction[i] = previous;
-      if (i > 0) {
-        this.listPhasePrediction[i - 1].next = previous;
-      }
-      index = index + width_pred;
-    }
-    previous = null;
-    let n_label_samples = label_segments.length;
-    //let width_label = 100 / n_label_samples;
-    let label_index = 0;
-    for (let i = 0; i < n_label_samples; i++) {
-      let width_label = label_segments[i].length;
-      previous = {
-        start: label_index,
-        width: width_label,
-        label: label_segments[i][0],
-        next: null,
-        previous: previous,
-        exists: true,
-      };
-      this.listPhaseGt[i] = previous;
-      if (i > 0) {
-        this.listPhaseGt[i - 1].next = previous;
-      }
-      label_index = label_index + width_label;
-    }
-    const uniquePredCount = new Set(this.predictionArr).size;
-    const uniqueLabelCount = new Set(this.labelArr).size;
-    const uniqueCount = Math.max(uniquePredCount, uniqueLabelCount)
-    this.classService.setClasses([...Array(uniqueCount).keys()]);
-    this.classService.setCurrentClass(0);
-
-    //this.scoreService.initConfMat();
-    //this.updateMultiVideoScore(video_id);
-
+    this.scoreService.segment_arr_pred = prediction;
+    this.scoreService.segment_arr_label = groundtruth;
+    this.scoreService.buildPhaseSetup(prediction, groundtruth);
   }
 
   phaseAction(event: MouseEvent | TouchEvent, activePhase: Phase, gt: boolean = false) {
@@ -429,11 +314,11 @@ export class SurgicalPhaseComponent implements OnInit {
         activePhase.width = newWidth;
         activePhase.next = newPhase;
         if (gt) {
-          let index = this.listPhaseGt.indexOf(activePhase);
-          this.listPhaseGt.splice(index + 1, 0, newPhase);
+          let index = this.scoreService.listPhaseGt.indexOf(activePhase);
+          this.scoreService.listPhaseGt.splice(index + 1, 0, newPhase);
         } else {
-          let index = this.listPhasePrediction.indexOf(activePhase);
-          this.listPhasePrediction.splice(index + 1, 0, newPhase);
+          let index = this.scoreService.listPhasePrediction.indexOf(activePhase);
+          this.scoreService.listPhasePrediction.splice(index + 1, 0, newPhase);
         }
       } else if (this.tool == 'fill') {
         activePhase.label = this.classService.currentClass;
@@ -448,11 +333,10 @@ export class SurgicalPhaseComponent implements OnInit {
         }
       }
     }
-    //this.scoreService.isSelectedVideo
     if(this.scoreService.isMulti) {
       this.updateMultiVideoScore(this.scoreService.selectedVideo);
     } else {
-      this.updateScore();
+      this.scoreService.updateVideoScore();
     }
   }
 
@@ -473,8 +357,8 @@ export class SurgicalPhaseComponent implements OnInit {
           var offset = (100 * event.movementX) / width;
         }
         if (
-          this.activePhase.width + offset > 0 &&
-          this.activePhase.next.width - offset > 0
+            this.activePhase.width + offset > 0 &&
+            this.activePhase.next.width - offset > 0
         ) {
           this.activePhase.width += offset;
           this.activePhase.next.start += offset;
@@ -485,7 +369,7 @@ export class SurgicalPhaseComponent implements OnInit {
         this.updateMultiVideoScore(this.scoreService.selectedVideo);
         this.scoreService.isOneUpdate = true; //update video level table
       } else {
-        this.updateScore();
+        this.scoreService.updateVideoScore();
       }
     }
   }
@@ -495,24 +379,15 @@ export class SurgicalPhaseComponent implements OnInit {
   }
   stopDragging() {
     this.isDragging = false;
-    let n_phases = this.listPhasePrediction.length;
+    let n_phases = this.scoreService.listPhasePrediction.length;
     for (let i = 0; i < n_phases; i++) {
-      let current_phase = this.listPhasePrediction[i];
+      let current_phase = this.scoreService.listPhasePrediction[i];
       if (!(current_phase.width > 0)) {
         this.deletePhase(current_phase);
       }
     }
-    //this.updateScore();
   }
 
-  updateListPhase() {
-    this.listPhasePrediction = this.listPhasePrediction.filter((element) => {
-      return element.exists;
-    });
-    this.listPhaseGt = this.listPhaseGt.filter((element) => {
-      return element.exists;
-    });
-  }
   deletePhase(phase: Phase) {
     if (phase.previous) {
       phase.previous.next = phase.next;
@@ -525,13 +400,13 @@ export class SurgicalPhaseComponent implements OnInit {
 
   updateMultiVideoScore(video_id : number) {
     if (this.classService.classes) {
-      this.updateListPhase();
+      this.scoreService.updateListPhase();
 
-      var predicted = new Array<number>(this.nFrames);
-      var groundtruth = new Array<number>(this.nFrames);
+      var predicted = new Array<number>(this.scoreService.nFrames);
+      var groundtruth = new Array<number>(this.scoreService.nFrames);
 
-      var phasePredicted = this.listPhasePrediction[0];
-      var phaseGt = this.listPhaseGt[0];
+      var phasePredicted = this.scoreService.listPhasePrediction[0];
+      var phaseGt = this.scoreService.listPhaseGt[0];
       let pred_label = phasePredicted.label;
       let gt_label = phaseGt.label;
       let pred_step = phasePredicted.width;
@@ -539,7 +414,7 @@ export class SurgicalPhaseComponent implements OnInit {
       let j = 0;
       let gt = 0;
 
-      for (let i = 0; i < this.nFrames; i++) {
+      for (let i = 0; i < this.scoreService.nFrames; i++) {
         predicted[i] = pred_label;
         j += 1;
 
@@ -550,7 +425,7 @@ export class SurgicalPhaseComponent implements OnInit {
           j = 0;
         }
       }
-      for (let i = 0; i < this.nFrames; i++) {
+      for (let i = 0; i < this.scoreService.nFrames; i++) {
         groundtruth[i] = gt_label;
         gt += 1;
 
@@ -561,81 +436,24 @@ export class SurgicalPhaseComponent implements OnInit {
           gt = 0;
         }
       }
-      this.segment_arr_pred = [];
-      this.segment_arr_label = [];
-      this.segment_arr_pred = predicted;
-      this.segment_arr_label = groundtruth;
-
+      this.scoreService.segment_arr_pred = [];
+      this.scoreService.segment_arr_label = [];
+      this.scoreService.segment_arr_pred = predicted;
+      this.scoreService.segment_arr_label = groundtruth;
+      this.scoreService.predictionArray = predicted;
+      this.scoreService.groundtruthArray = groundtruth;
       this.scoreService.updateConfusionMatrixFromArrayMultiVideos(
           predicted,
           groundtruth,
           video_id,
-          this.video_count
+          this.scoreService.final_multi_result.size
       );
     }
   }
 
-  updateScore() {
-    if (this.classService.classes) {
-      this.updateListPhase();
-
-      var predicted = new Array<number>(this.nFrames);
-      var groundtruth = new Array<number>(this.nFrames);
-
-      var phasePredicted = this.listPhasePrediction[0];
-      var phaseGt = this.listPhaseGt[0];
-      let pred_label = phasePredicted.label;
-      let gt_label = phaseGt.label;
-      let pred_step = phasePredicted.width;
-      let gt_step = phaseGt.width;
-      let j = 0;
-      let gt = 0;
-
-      for (let i = 0; i < this.nFrames; i++) {
-        predicted[i] = pred_label;
-        j += 1;
-
-        if(phasePredicted.next && j >= pred_step) {
-          phasePredicted = phasePredicted.next;
-          pred_label = phasePredicted.label;
-          pred_step = phasePredicted.width;
-          j = 0;
-        }
-      }
-      for (let i = 0; i < this.nFrames; i++) {
-        groundtruth[i] = gt_label;
-        gt += 1;
-
-        if(phaseGt.next && gt >= gt_step) {
-          phaseGt = phaseGt.next;
-          gt_label = phaseGt.label;
-          gt_step = phaseGt.width;
-          gt = 0;
-        }
-      }
-      this.segment_arr_pred = [];
-      this.segment_arr_label = [];
-      this.segment_arr_pred = predicted;
-      this.segment_arr_label = groundtruth;
-
-      this.scoreService.updateConfusionMatrixFromArray(this.segment_arr_pred, this.segment_arr_label);
-    }
-  }
-
-   arraysEqual(a: any[], b: any[]) {
-    if (a.length !== b.length) {
-      return false;
-    }
-    for (let i = 0; i < a.length; i++) {
-      if (a[i] !== b[i]) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   onFileSelected(event: any) {
-    const path = '../../../assets/edge_case_files/' + event.value;
+    this.scoreService.selectedFile = event.value;
+    const path = 'assets/edge_case_files/' + event.value;
     const reader = new FileReader();
 
     fetch(path)
@@ -651,11 +469,6 @@ export class SurgicalPhaseComponent implements OnInit {
             }
         )
         .catch(error => console.log(error));
-  }
-
-  updateFramerate(){
-    this.nFrames = Math.round(this.videoPlayerCtx.duration * this.framerate)
-    this.updateScore()
   }
 
 }

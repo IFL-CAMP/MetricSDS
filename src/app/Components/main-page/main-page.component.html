@@ -1,4 +1,3 @@
-
 <mat-toolbar>
   <button
     mat-button
@@ -10,7 +9,7 @@
     <mat-icon>menu</mat-icon>
     Options
   </button>
-  <h1 *ngIf="!UICtrlService.isSegmentation"><a routerLink="/welcome">Classification Metrics</a></h1>
+  <h1 *ngIf="!UICtrlService.isSegmentation"><a routerLink="/welcome">Surgical Phase Metrics</a></h1>
 
   <button
     mat-button
@@ -73,6 +72,7 @@
 
       <mat-divider></mat-divider>
     </div>
+      <h2>Settings</h2>
       <mat-slide-toggle
               class="example-margin"
               [checked]="UICtrlService.showEdit"
@@ -82,7 +82,6 @@
       >
         Edit
       </mat-slide-toggle>
-      <h2>Metrics</h2>
 
       <mat-slide-toggle
               class="example-margin"
@@ -116,7 +115,7 @@
         Boundary metrics
       </mat-checkbox>
 
-      <mat-slide-toggle
+      <!--<mat-slide-toggle
         *ngIf="UICtrlService.showMetrics"
         class="example-margin"
         [checked]="UICtrlService.showScores"
@@ -125,7 +124,7 @@
         [matTooltipPosition]="'right'"
       >
         Score
-      </mat-slide-toggle>
+      </mat-slide-toggle>-->
 
       <mat-slide-toggle
         *ngIf="UICtrlService.showMetrics"

@@ -1,19 +1,22 @@
-.metric-container {
+.video-metric-container {
   display: flex;
   flex-direction: column;
   margin: 0.10rem;
 }
 
-.metric1-container {
+.metric-container {
   display: flex;
   flex-direction: column;
-  margin: 0.25rem;
+  border-collapse: collapse;
+  border-color: transparent;
 }
 
-.metric2-container {
-  display: flex;
-  flex-direction: column;
-  margin: 0.45rem;
+.metric-container table:first-child {
+  border-bottom: 15px solid transparent;
+}
+
+.metric-container table:last-child {
+  border-top: 15px solid transparent;
 }
 
 td {

@@ -1,4 +1,4 @@
-<div class="metric-container" [ngSwitch]="!scoresService.isMulti">
+<div class="video-metric-container" [ngSwitch]="!scoresService.isMulti">
   <!--Multi-class table-->
   <table *ngSwitchCase="true">
     <!--Headers-->
@@ -136,16 +136,16 @@
     </tr>
   </table>
 </div>-->
-<div class="metric1-container" style="margin: 7px" [ngSwitch]="scoresService.isMulti && scoresService.isSelectedVideo">
+<div class="metric-container" style="margin: 7px" [ngSwitch]="scoresService.isMulti && scoresService.isSelectedVideo">
   <!--Multi-class table for each video results-->
   <table *ngSwitchCase="true">
     <!--Headers-->
     <tr>
       <th
-              (mouseenter)="UICtrlService.activateTooltip($event, 'Metrics')"
+              (mouseenter)="UICtrlService.activateTooltip($event, 'Metric')"
               (mouseleave)="UICtrlService.deactivateTooltip()"
       >
-        {{ 'Video Level Metrics' }}
+        {{ 'Video Level Results' }}
       </th>
       <th
               (mouseenter)="UICtrlService.activateTooltip($event, 'Micro')"
@@ -212,16 +212,16 @@
   </table>
 
 </div>
-<div class="metric1-container" [ngSwitch]="scoresService.isMulti">
+<div class="metric-container" [ngSwitch]="scoresService.isMulti">
     <!--Multi-class table-->
     <table *ngSwitchCase="true">
       <!--Headers-->
       <tr>
         <th
-          (mouseenter)="UICtrlService.activateTooltip($event, 'Dataset Level Metrics')"
+          (mouseenter)="UICtrlService.activateTooltip($event, 'Dataset Level Results')"
           (mouseleave)="UICtrlService.deactivateTooltip()"
         >
-          {{ 'Dataset Level Macro Results' }}
+          {{ 'Dataset Level Results' }}
         </th>
         <th
           (mouseenter)="UICtrlService.activateTooltip($event, 'Micro')"
@@ -242,10 +242,7 @@
         *ngFor="let score of scoresService.scores; let i = index"
         [ngStyle]="{ display: scoresService.visibleScores[i] ? '' : 'none' }"
       >
-        <th
-          (mouseenter)="UICtrlService.activateTooltip($event, score.name)"
-          (mouseleave)="UICtrlService.deactivateTooltip()"
-        >
+        <th>
           {{ score.name }}
         </th>
         <!--<td [style.background-color]="this.scoresService.colorScore(score.score)"

@@ -1,6 +1,6 @@
 
-<div class="flex-horizontal">
-  <div class="verticalGroup growFlex">
+<div class="flex-horizontal" [style.margin-right]="UICtrlService.showEdit ? '-5px' : '0px'">
+  <div class="verticalGroup growFlex" [style.margin-left]="UICtrlService.showEdit ? '0px' : '-25px'" >
     <label class="unselectable" >Class</label>
     <mat-button-toggle-group
       id="classSelector"
@@ -68,33 +68,18 @@
         <mat-label>Number of frames</mat-label>
         <input
           type="number"
+          readonly
           matInput
           placeholder="20000"
-          [(ngModel)]="nFrames"
+          [(ngModel)]="scoreService.nFrames"
           name="nFrames"
-          (input)="updateScore()"
-        />
-      </mat-form-field>
-    </form>
-  </div>
-  <div class="verticalGroup growFlex" *ngIf="localUrl">
-    <form>
-      <mat-form-field appearance="fill">
-        <mat-label>Framerate</mat-label>
-        <input
-          type="number"
-          matInput
-          placeholder="24"
-          [(ngModel)]="framerate"
-          name="framerate"
-          (input)="updateFramerate()"
         />
       </mat-form-field>
     </form>
   </div>
 </div>
-<div class="flex-horizontal">
-<div class="verticalGroup growFlex">
+<div class="flex-horizontal" [style.margin-right]="UICtrlService.showEdit ? '-5px' : '0px'">
+<div class="verticalGroup growFlex" [style.margin-left]="UICtrlService.showEdit ? '0px' : '-25px'">
   <mat-form-field *ngIf="scoreService.isMulti">
     <mat-label>Select a video number</mat-label>
     <mat-select [(ngModel)]="scoreService.selectedVideo" (selectionChange)="handleVideoSelection($event.value)">
@@ -105,11 +90,11 @@
   </mat-form-field>
 </div>
 </div>
-<label class="unselectable" for="gt"> Groundtruth</label>
-<div id="gt" class="horizontal-container" (mouseleave)="stopDragging()">
+<label class="unselectable" [style.margin-left]="UICtrlService.showEdit ? '0px' : '-25px'" [style.margin-right]="UICtrlService.showEdit ? '-5px' : '0px'" for="gt"> Groundtruth</label>
+<div id="gt" [ngClass]="{'horizontal1-container': UICtrlService.showEdit, 'horizontal-container': !UICtrlService.showEdit}" (mouseleave)="stopDragging()">
 
   <div
-          *ngFor="let phase of listPhaseGt; let isLast = last"
+          *ngFor="let phase of scoreService.listPhaseGt; let isLast = last"
           class="phase"
           [style.width.%]="phase.width"
           [style.left.%]="phase.start"
@@ -133,10 +118,10 @@
   </div>
 </div>
 
-<label class="unselectable" for="timephase"> Prediction</label>
-<div id="timephase" class="horizontal-container" (mouseleave)="stopDragging()">
+<label class="unselectable" [style.margin-left]="UICtrlService.showEdit ? '0px' : '-25px'"  [style.margin-right]="UICtrlService.showEdit ? '-5px' : '0px'" for="timephase"> Prediction</label>
+<div id="timephase" [ngClass]="{'horizontal1-container': UICtrlService.showEdit, 'horizontal-container': !UICtrlService.showEdit}" (mouseleave)="stopDragging()">
   <div
-    *ngFor="let phase of listPhasePrediction; let isLast = last"
+    *ngFor="let phase of scoreService.listPhasePrediction; let isLast = last"
     class="phase"
     [style.width.%]="phase.width"
     [style.left.%]="phase.start"
@@ -181,7 +166,7 @@
 <div class="flex-vertical vertical-center download-container">
 <mat-form-field>
   <mat-label>Select a video file</mat-label>
-  <mat-select (selectionChange)="onFileSelected($event)">
+  <mat-select [(ngModel)]="scoreService.selectedFile" (selectionChange)="onFileSelected($event)">
     <mat-option *ngFor="let file of files" [value]="file">
       {{ file }}
     </mat-option>
