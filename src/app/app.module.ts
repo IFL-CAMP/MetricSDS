@@ -18,10 +18,11 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { TooltipsComponent } from './Components/tooltips/tooltips.component';
 import { PresetsComponent } from './Components/presets/presets.component';
 import { WelcomeComponent } from './Components/welcome/welcome.component';
 import { MainPageComponent } from './Components/main-page/main-page.component';
-//import { MathjaxModule } from 'mathjax-angular';
+import { MathjaxModule } from 'mathjax-angular';
 import {MatCardModule} from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,12 +31,12 @@ import { SurgicalPhaseComponent } from './Components/Classification/surgical-pha
 import { ClassificationPageComponent } from './Components/Classification/classification-page/classification-page.component';
 import {MatInputModule} from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-//import { MatFileUploadModule } from 'angular-material-fileupload';
 import { ArrayComponent } from './Components/Classification/array/array.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    TooltipsComponent,
     ConfMatComponent,
     MetricsComponent,
     PresetsComponent,
@@ -50,7 +51,7 @@ import { ArrayComponent } from './Components/Classification/array/array.componen
     FormsModule,
     MatInputModule,
     MatProgressSpinnerModule,
-    //MathjaxModule.forRoot(),
+    MathjaxModule.forRoot(),
     MatIconModule,
     MatButtonToggleModule,
     MatListModule,

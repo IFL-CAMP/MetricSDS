@@ -9,22 +9,6 @@
 
     <div class="text">
       When hovering over each metric, a small description, a drawing and the equation will be shown.
-      The equations and the schematics are of a binary classification problem.
-      The drawings are all based over these representations of the predictions and the groundtruth.
-      The circle represents the predictions (positive) of the model and the rectangle the groundtruth.
-      Green represents the positive class and red the negative class.
-    </div>
-  </div>
-
-  <div *ngSwitchCase="'Video Level Metrics'" class="container-horizontal">
-
-    <div>
-      <img src="assets/images/metrics/schema.svg" alt="Schematic of metrics representation">
-    </div>
-
-    <div class="text">
-      When hovering over each metric, a small description, a drawing and the equation will be shown.
-      The equations and the schematics are of a binary classification problem.
       The drawings are all based over these representations of the predictions and the groundtruth.
       The circle represents the predictions (positive) of the model and the rectangle the groundtruth.
       Green represents the positive class and red the negative class.
@@ -39,10 +23,10 @@
 
     <div class="text">
       When hovering over each metric, a small description, a drawing and the equation will be shown.
-      The equations and the schematics are of a binary classification problem.
       The drawings are all based over these representations of the predictions and the groundtruth.
       The circle represents the predictions (positive) of the model and the rectangle the groundtruth.
-      Green represents the positive class and red the negative class.
+      Green represents the positive class and red the negative class. The macro average of video level
+      results represents the dataset level results.
     </div>
   </div>
 
@@ -73,7 +57,6 @@
     </div>
     <div class="text">
       Fraction of relevant instances among the retrieved instances (w.r.t sensitivity).<br> <br>
-      Metric ranges from 0 to 100 %.<br>
       <span [mathjax]="precision"></span>
     </div>
   </div>
@@ -84,14 +67,15 @@
     </div>
 
     <div class="text">
-      Percentage of pixels in the segmentation that are correctly classified. <br> <br>
-      Metric ranges from 0 to 100 %.<br>
+      Accuracy is a metric that generally describes how the model performs across all classes. <br> <br>
+      It is the ratio between the number of correct predictions to the total number of predictions.<br>
       <span [mathjax]="accuracy"></span>
     </div>
   </div>
 
   <div *ngSwitchCase="'F1'" class="container-horizontal">
     <div class="text">
+      <br>
       F1 score is one of the common measures to rate how successful a classifier is.
       It’s the harmonic mean of two other metrics, namely: precision and recall. <br>
       <span [mathjax]="microF1"></span><br>
@@ -99,30 +83,39 @@
       Specifically, macro F1 is computed as:<br><br>
       <span [mathjax]="macroF1"></span>
       K is the number of class in the macro F1 score. The macro F1 score treats each class equally, regardless of the number of instances in each class.<br>
+      <br>
     </div>
   </div>
 
   <div *ngSwitchCase="'Overall Accuracy'" class="container-horizontal">
     <div class="text">
-      Percentage of pixels in the segmentation that are correctly classified. <br> <br>
-      Metric ranges from 0 to 100 %.<br>
+      <br>
+      Accuracy returns an overall measure of how much the model is correctly predicting on the entire set of data. <br> <br>
       <span [mathjax]="overallAccuracy"></span>
+      <br>
     </div>
   </div>
 
   <div *ngSwitchCase="'Overlap Score'" class="container-horizontal">
     <div class="text">
-      Percentage of pixels in the segmentation that are correctly classified. <br> <br>
-      Metric ranges from 0 to 100 %.<br>
+      The ground truth and prediction are split into segments of consecutive class values.<br>
+      <span [mathjax]="groundTruth"></span>
+      <span [mathjax]="prediction"></span>
+      The overlap between those segments is then scored with the following equation.<br>
       <span [mathjax]="overlapScore"></span>
     </div>
   </div>
 
   <div *ngSwitchCase="'MCC'" class="container-horizontal">
     <div class="text">
+      <br>
       Percentage of pixels in the segmentation that are correctly classified. <br> <br>
-      Metric ranges from 0 to 100 %.<br>
       <span [mathjax]="mcc"></span>
+      <span [mathjax]="c" style="font-size: 0.8em;"></span>
+      <span [mathjax]="s" style="font-size: 0.8em;"></span>
+      <span [mathjax]="p" style="font-size: 0.8em;"></span>
+      <span [mathjax]="t" style="font-size: 0.8em;"></span>
+      <br>
     </div>
   </div>
 
@@ -133,7 +126,6 @@
 
     <div class="text">
       Probability of predicting a negative test. <br> <br>
-      Metric ranges from 0 to 100 %. <br>
       <span [mathjax]="specificity"></span>
     </div>
   </div>
@@ -147,7 +139,6 @@
       Fraction of relevant instances that were retrieved (w.r.t. precision) or
       probability of predicting a positive test (w.r.t specificity).
       There is a balance to be found between precision and sensitivity (recall) and between sensitivity and specificity. <br> <br>
-      Metric ranges from 0 to 100 %.<br>
       <span [mathjax]="sensitivity"></span>
     </div>
   </div>
@@ -158,7 +149,6 @@
       Tells us how much the classifier is better than a random guess.
       Negative values mean that the classifier is performing less accurately than a random guess (0).
       Metric of 1 indicates a perfect classifier.<br> <br>
-      Metric ranges from negative values to 1. <br>
       <span [mathjax]="kappa"></span>
     </div>
 
