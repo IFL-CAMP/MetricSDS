@@ -3,7 +3,8 @@
 To provide a quantitative measure of the performance of the surgical phase predictions, we utilize the metrics of Accuracy, Overall accuracy, Precision, Sensitivity, F1, Jaccard Index (IoU), Specificity, Overlap Score, Matthews Correlation Coefficient (MCC) and Cohen's Kappa.
 
 <div style="text-align:center;">
-    <img src="./metrics_images/metrics.PNG" alt="alt text" width="250"/>
+    <img src="./metrics_images/metrics.PNG" alt="alt text" width="250"/><br>
+
 </div>
 
 **True Positive (TP)** : A test result that correctly indicates the presence of a condition or characteristic [2].<br>
@@ -167,7 +168,7 @@ Mattheus Correlation Coefficient [4].
 ```
 
 ### References
-[1] 
+[1] Clement Pla. (2022). Segmentation Metric Tutorial. GitHub repository. <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[source]</a><br>
 [2] Wikipedia contributors. (2023, March 15). Confusion matrix. In Wikipedia, The Free Encyclopedia.
 <a href="https://en.wikipedia.org/wiki/Confusion_matrix">[source]</a><br>
 [3] Krystian Safjan. (2023). Micro and Macro Averages in Multiclass Multilabel Problems. Creative Commons Attribution-ShareAlike.

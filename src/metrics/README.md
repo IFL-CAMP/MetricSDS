@@ -167,7 +167,7 @@ Mattheus Correlation Coefficient [4].
 ```
 
 ### References
-[1]
+[1]Clement Pla. (2022). Segmentation Metric Tutorial. GitHub repository. <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[source]</a><br>
 [2] Wikipedia contributors. (2023, March 15). Confusion matrix. In Wikipedia, The Free Encyclopedia.
 <a href="https://en.wikipedia.org/wiki/Confusion_matrix">[source]</a><br>
 [3] Krystian Safjan. (2023). Micro and Macro Averages in Multiclass Multilabel Problems. Creative Commons Attribution-ShareAlike.
