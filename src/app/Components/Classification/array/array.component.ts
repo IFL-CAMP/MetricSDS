@@ -13,7 +13,7 @@ export class ArrayComponent implements OnInit {
   gtString: string = '';
   predArray: Array<number>;
   gtArray: Array<number>;
-  maxClass: number;
+  maxClass: number = 6;
   warningMessage: string = '';
 
 
@@ -24,7 +24,6 @@ export class ArrayComponent implements OnInit {
   ) {
     this.classService.setClasses([0, 1, 2]);
     this.scoreService.initConfMat();
-    this.maxClass = 3;
   }
 
   ngOnInit(): void {
@@ -38,8 +37,6 @@ export class ArrayComponent implements OnInit {
       let max_value = this.calculateClassNum();
       this.classService.setClasses([...Array(max_value + 1).keys()]);
       this.scoreService.initConfMat();
-      this.maxClass = this.classService.classes.length - 1;
-
       if (this.predArray.length > 0 && this.gtArray.length > 0 && this.predArray.length == this.gtArray.length) {
         if(this.scoreService.isMulti) {
           this.scoreService.isOneUpdate = true;
