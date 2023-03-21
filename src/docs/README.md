@@ -31,7 +31,7 @@ Accuracy returns an overall measure of how much the model is correctly predictin
 matrix [4].
 
 <p align="center">
-    <img src="./metrics_images/accuracy.PNG" alt="alt text" width="100"/>
+    <img src="./metrics_images/accuracy.PNG" alt="alt text" width="100"/><br>
     <sub><sup>Figure 2: Accuracy <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
