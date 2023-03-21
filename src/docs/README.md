@@ -32,6 +32,7 @@ matrix [4].
 
 <p align="center">
     <img src="./metrics_images/accuracy.PNG" alt="alt text" width="100"/>
+    <sub><sup>Figure 2: Accuracy <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
@@ -59,7 +60,7 @@ Macro Average Precision and Recall are simply computed as the arithmetic mean of
 
 <p align="center">
     <img src="./metrics_images/precision.PNG" alt="alt text" width="100"/><br>
-<sub><sup>Figure 2: Precision <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
+<sub><sup>Figure 3: Precision <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
@@ -92,7 +93,7 @@ model to find all the Positive units in the dataset [4].
 
 <p align="center">
     <img src="./metrics_images/recall_sensitivity.PNG" alt="alt text" width="100"/><br>
-    <sub><sup>Figure 3: Sensitivity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
+    <sub><sup>Figure 4: Sensitivity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
@@ -152,7 +153,7 @@ The specificity indicates the proportion of negative samples that are correctly 
 
 <p align="center">
     <img src="./metrics_images/specificity.PNG" alt="alt text" width="100"/><br>
-    <sub><sup>Figure 4: Specificity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
+    <sub><sup>Figure 5: Specificity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
@@ -165,7 +166,7 @@ The Jaccard Index, also known as the Jaccard similarity coefficient, is a statis
 
 <p align="center">
     <img src="./metrics_images/iou.png" alt="alt text" width="150"/><br>
-    <sub><sup>Figure 5: IoU <a href="https://deepai.org/machine-learning-glossary-and-terms/jaccard-index">[9]</a></sup></sub>
+    <sub><sup>Figure 6: IoU <a href="https://deepai.org/machine-learning-glossary-and-terms/jaccard-index">[9]</a></sup></sub>
 </p>
 
 The mathematical representation of the index is written as:
@@ -193,10 +194,10 @@ In some cases, MCC can be negative, indicating an inverse relationship between t
 ```
 
 
-$\sum C_{kk} \hspace{1cm} \text{the total number of elements correctly predicted}$
-$\sum \sum C_{ij} \hspace{1cm} \text{the total number of elements}$
-$\sum C_{ki} \hspace{1cm} \text{the number of times that class k was predicted (column total)}$
-$\sum C_{ik} \hspace{0.2cm} \text{the number of times that class k truly occurred (row total)}$
+$\sum C_{kk} \hspace{1cm} \text{the total number of elements correctly predicted}$ <br>
+$\sum \sum C_{ij} \hspace{1cm} \text{the total number of elements}$ <br>
+$\sum C_{ki} \hspace{1cm} \text{the number of times that class k was predicted (column total)}$ <br>
+$\sum C_{ik} \hspace{0.2cm} \text{the number of times that class k truly occurred (row total)}$ <br>
 
 ### Cohen's Kappa
 
