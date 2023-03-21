@@ -2,9 +2,9 @@
 
 To provide a quantitative measure of the performance of the surgical phase predictions, we utilize the metrics of Accuracy, Overall accuracy, Precision, Sensitivity, F1, Jaccard Index (IoU), Specificity, Overlap Score, Matthews Correlation Coefficient (MCC) and Cohen's Kappa.
 
-<div style="text-align:center;">
+<p align="center">
     <img src="./metrics_images/metrics.PNG" alt="alt text" width="250"/>
-</div>
+</p>
 
 **True Positive (TP)** : A test result that correctly indicates the presence of a condition or characteristic [2].<br>
 **True Negative (TN)** : A test result that correctly indicates the absence of a condition or characteristic [2].<br>
@@ -24,9 +24,9 @@ Macro average, on the other hand, calculates the performance of each class indiv
 Accuracy returns an overall measure of how much the model is correctly predicting on the entire set of data. It is one of the most popular metrics in multi-class classification and it is directly computed from the confusion
 matrix [4].
 
-<div style="text-align:center;">
-    <img src="./metrics_images/accuracy.PNG" alt="alt text" width="250"/>
-</div>
+<p align="center">
+    <img src="./metrics_images/accuracy.PNG" alt="alt text" width="100"/>
+</p>
 
 ```math
 \frac{TP + TN}{TP + TN + FP + FN}
@@ -51,9 +51,9 @@ Precision refers to the percentage of units in our model's predictions that are 
 
 Macro Average Precision and Recall are simply computed as the arithmetic mean of the metrics for single classes [4].
 
-<div style="text-align:center;">
-    <img src="./metrics_images/precision.PNG" alt="alt text" width="250"/>
-</div>
+<p align="center">
+    <img src="./metrics_images/precision.PNG" alt="alt text" width="100"/>
+</p>
 
 ```math
 \frac{TP}{TP+FP}
@@ -64,9 +64,9 @@ Macro Average Precision and Recall are simply computed as the arithmetic mean of
 The Recall measures the model’s predictive accuracy for the positive class: intuitively, it measures the ability of the
 model to find all the Positive units in the dataset [4].
 
-<div style="text-align:center;">
-    <img src="./metrics_images/recall_sensitivity.PNG" alt="alt text" width="250"/>
-</div>
+<p align="center">
+    <img src="./metrics_images/recall_sensitivity.PNG" alt="alt text" width="100"/>
+</p>
 
 ```math
 \frac{TP}{TP+FN}
@@ -111,9 +111,9 @@ Macro-weighted scoring takes a weighted mean of the measures. The weights for ea
 
 The specificity indicates the proportion of negative samples that are correctly predicted as negative. It is also known as True Negative Rate (TNR) [4].
 
-<div style="text-align:center;">
-    <img src="./metrics_images/specificity.PNG" alt="alt text" width="250"/>
-</div>
+<p align="center">
+    <img src="./metrics_images/specificity.PNG" alt="alt text" width="100"/>
+</p>
 
 ```math
 \frac{TN}{TN+FP}
@@ -123,9 +123,9 @@ The specificity indicates the proportion of negative samples that are correctly 
 
 The Jaccard Index, also known as the Jaccard similarity coefficient, is a statistic used in understanding the similarities between sample sets. The measurement emphasizes similarity between finite sample sets, and is formally defined as the size of the intersection divided by the size of the union of the sample sets [8].<br>
 
-<div style="text-align:center;">
+<p align="center">
     <img src="./metrics_images/iou.png" alt="alt text" width="250"/>
-</div>
+</p>
 
 The mathematical representation of the index is written as:
 
