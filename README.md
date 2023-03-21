@@ -25,4 +25,4 @@ Run ```npx angular-cli-ghpages --dir=dist/metric-tutorial``` to push the sources
 
 # Surgical Phase Recognition Metrics
 
-[Metric guidelines for this project](metrics/README.md)
+[Metric guidelines for this project](src/metrics/README.md)
