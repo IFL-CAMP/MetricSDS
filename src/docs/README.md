@@ -3,7 +3,8 @@
 To provide a quantitative measure of the performance of the surgical phase predictions, we utilize the metrics of Accuracy, Overall accuracy, Precision, Sensitivity, F1, Jaccard Index (IoU), Specificity, Overlap Score, Matthews Correlation Coefficient (MCC) and Cohen's Kappa.
 
 <p align="center">
-    <img src="./metrics_images/metrics.PNG" alt="alt text" width="250"/>
+    <img src="./metrics_images/metrics.PNG" alt="alt text" width="250"/><br>
+    <sub><sup>Figure 1: Metrics <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 **True Positive (TP)** : A test result that correctly indicates the presence of a condition or characteristic [2].<br>
@@ -19,6 +20,11 @@ The Micro average score is calculated from the individual classes’ true positi
 
 Macro average, on the other hand, calculates the performance of each class individually and then takes the unweighted mean of the class-wise performance. Macro average gives equal weight to each class and is useful when all classes are of equal importance [3].
 
+### Macro-weighted Average Score
+
+Macro-weighted scoring takes a weighted mean of the measures. The weights for each class are the total number of samples of that class [6].
+
+The difference between **macro** and **micro averaging** is that macro averaging gives equal weight to each category while micro averaging gives equal weight to each sample. If we have the same number of samples for each class, both macro and micro will provide the same score [9].
 ### Accuracy
 
 Accuracy returns an overall measure of how much the model is correctly predicting on the entire set of data. It is one of the most popular metrics in multi-class classification and it is directly computed from the confusion
@@ -52,12 +58,32 @@ Precision refers to the percentage of units in our model's predictions that are 
 Macro Average Precision and Recall are simply computed as the arithmetic mean of the metrics for single classes [4].
 
 <p align="center">
-    <img src="./metrics_images/precision.PNG" alt="alt text" width="100"/>
+    <img src="./metrics_images/precision.PNG" alt="alt text" width="100"/><br>
+<sub><sup>Figure 2: Precision <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
 \frac{TP}{TP+FP}
 ```
+
+#### Micro Precision
+
+The micro average precision is the sum of all true positives divided by the sum of all true positives and false positives. In other words, we divide the number of correctly identified predictions by the total number of predictions [9].
+
+```math
+\frac{TP_1 + TP_2 + TP_3 + ... + TP_n}{TP_1 + TP_2 + TP_3 + ... + TP_n+FP_1 + FP_2 + FP_3 + ... + FP_n}
+```
+
+#### Macro Precision
+
+The macro average precision is the arithmetic mean of all the precision values for the different classes [9].
+
+```math
+\frac{Prec_1 + Prec_2 + ... + Prec_n}{n}
+```
+
+n is the total number of classes.
+
 
 ### Sensitivity
 
@@ -65,11 +91,28 @@ The Recall measures the model’s predictive accuracy for the positive class: in
 model to find all the Positive units in the dataset [4].
 
 <p align="center">
-    <img src="./metrics_images/recall_sensitivity.PNG" alt="alt text" width="100"/>
+    <img src="./metrics_images/recall_sensitivity.PNG" alt="alt text" width="100"/><br>
+    <sub><sup>Figure 3: Sensitivity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
 \frac{TP}{TP+FN}
+```
+
+#### Micro Sensitivity
+
+The micro average recall is the sum of true positives for all classes divided by actual positives (rather than predicted positives).
+
+```math
+\frac{TP_1 + TP_2 + TP_3 + ... + TP_n}{TP_1 + TP_2 + TP_3 + ... + TP_n+FN_1 + FN_2 + FN_3 + ... + FN_n}
+```
+
+#### Macro Sensitivity
+
+The macro average recall is the arithmetic mean of all recall scores for different classes.
+
+```math
+\frac{Recall_1 + Recall_2 + ... + Recall_n}{n}
 ```
 
 ### F1 Score
@@ -103,16 +146,13 @@ Macro F1-Score for each class is the harmonic mean of Macro-Precision and Macro-
 \frac{1}{K} \sum_{i=1}^{K} {F}_{i}
 ```
 
-#### Macro-weighted F1 Score
-
-Macro-weighted scoring takes a weighted mean of the measures. The weights for each class are the total number of samples of that class [6].
-
 ### Specificity
 
 The specificity indicates the proportion of negative samples that are correctly predicted as negative. It is also known as True Negative Rate (TNR) [4].
 
 <p align="center">
-    <img src="./metrics_images/specificity.PNG" alt="alt text" width="100"/>
+    <img src="./metrics_images/specificity.PNG" alt="alt text" width="100"/><br>
+    <sub><sup>Figure 4: Specificity <a href="https://github.com/ClementPla/SegmentationMetricTutorial/tree/main/src/assets/images">[1]</a></sup></sub>
 </p>
 
 ```math
@@ -124,7 +164,8 @@ The specificity indicates the proportion of negative samples that are correctly 
 The Jaccard Index, also known as the Jaccard similarity coefficient, is a statistic used in understanding the similarities between sample sets. The measurement emphasizes similarity between finite sample sets, and is formally defined as the size of the intersection divided by the size of the union of the sample sets [8].<br>
 
 <p align="center">
-    <img src="./metrics_images/iou.png" alt="alt text" width="250"/>
+    <img src="./metrics_images/iou.png" alt="alt text" width="150"/><br>
+    <sub><sup>Figure 5: IoU <a href="https://deepai.org/machine-learning-glossary-and-terms/jaccard-index">[9]</a></sup></sub>
 </p>
 
 The mathematical representation of the index is written as:
@@ -179,3 +220,5 @@ Mattheus Correlation Coefficient [4].
 [7] C. Lea, R. Vidal and G. D. Hager. Learning convolutional action primitives for fine grained action recognition. in 2016 IEEE International Conference on Robotics and Automation (ICRA). May 2016. pp. 1642–1649.<br>
 [8] Adrian Rosebrock . (2016). Jaccard Index. DeepAI.
 <a href="https://deepai.org/machine-learning-glossary-and-terms/jaccard-index">[source]</a><br>
+[9] Arslan Tariq . (2023). What is the difference between micro and macro averaging?. Educative.
+<a href="https://www.educative.io/answers/what-is-the-difference-between-micro-and-macro-averaging">[source]</a><br>
