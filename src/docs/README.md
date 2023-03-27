@@ -214,11 +214,11 @@ Mattheus Correlation Coefficient [4].
 <a href="https://en.wikipedia.org/wiki/Confusion_matrix">[source]</a><br>
 [3] Krystian Safjan. (2023). Micro and Macro Averages in Multiclass Multilabel Problems. Creative Commons Attribution-ShareAlike.
 <a href="https://safjan.com/micro-and-macro-averages-in-multiclass-multilabel-problems/">[source]</a><br>
-[4] Margherita Grandini. Metrics For Multi-Class Classification: An Overview. 2020. 2020.<br>
-[5] Yutaka Sasaki et al. The truth of the f-measure. 2007. 2007.<br>
+[4] Grandini, Margherita, Enrico Bagli and Giorgio Visani. “Metrics for Multi-Class Classification: an Overview.” ArXiv abs/2008.05756 (2020): n. pag. <a href="https://arxiv.org/pdf/2008.05756.pdf">[source]</a><br>
+[5] Y. Sasaki et al., “The truth of the F-measure,” Teach Tutor mater, vol. 1,no. 5, pp. 1–5, 2007.<a href="https://www.cs.odu.edu/~mukka/cs795sum11dm/Lecturenotes/Day3/F-measure-YS-26Oct07.pdf">[source]</a><br>
 [6] Joydwip Mohajon. (2020). Confusion Matrix for Your Multi-Class Machine Learning Model. Towards Data Science.
 <a href="https://towardsdatascience.com/confusion-matrix-for-your-multi-class-machine-learning-model-ff9aa3bf7826#:~:text=Specificity%3A%20It%20tells%20you%20what,recall%20into%20a%20single%20measure">[source]</a><br>
-[7] C. Lea, R. Vidal and G. D. Hager. Learning convolutional action primitives for fine grained action recognition. in 2016 IEEE International Conference on Robotics and Automation (ICRA). May 2016. pp. 1642–1649.<br>
+[7] C. Lea, R. Vidal and G. D. Hager. Learning convolutional action primitives for fine grained action recognition. in 2016 IEEE International Conference on Robotics and Automation (ICRA). May 2016. pp. 1642–1649.<a href="https://jhu.pure.elsevier.com/en/publications/learning-convolutional-action-primitives-for-fine-grained-action-">[source]</a><br>
 [8] Adrian Rosebrock . (2016). Jaccard Index. DeepAI.
 <a href="https://deepai.org/machine-learning-glossary-and-terms/jaccard-index">[source]</a><br>
 [9] Arslan Tariq . (2023). What is the difference between micro and macro averaging?. Educative.
