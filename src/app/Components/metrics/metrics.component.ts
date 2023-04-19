@@ -27,7 +27,7 @@ export class MetricsComponent implements OnInit {
     this.scoresService.updateStateMatrix()
   }
 
-  formatScore(score: number, percentage = true, digits = 1) {
+  formatScore(score: number, percentage = true, digits = 2) {
     if (score == undefined) {
       return
     } else {

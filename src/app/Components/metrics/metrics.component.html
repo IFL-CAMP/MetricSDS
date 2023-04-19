@@ -1,4 +1,4 @@
-<div class="video-metric-container" [ngSwitch]="!scoresService.isMulti">
+<div class="video-metric-container" [ngSwitch]="!scoresService.isMulti && !scoresService.isBinary">
   <!--Multi-class table-->
   <table *ngSwitchCase="true">
     <!--Headers-->
@@ -93,8 +93,7 @@
     </tr>
   </table>
 </div>
-<!--<div class="metric-container" [ngSwitch]=" classService.classes.length == 2 && !scoresService.isMulti">
-  Binary classification table
+<div class="metric-container" [ngSwitch]="scoresService.isBinary">
   <table *ngSwitchCase="true">
     <tr>
       <th
@@ -135,7 +134,7 @@
       </td>
     </tr>
   </table>
-</div>-->
+</div>
 <div class="metric-container" style="margin: 7px" [ngSwitch]="scoresService.isMulti && scoresService.isSelectedVideo">
   <!--Multi-class table for each video results-->
   <table *ngSwitchCase="true">
@@ -212,7 +211,7 @@
   </table>
 
 </div>
-<div class="metric-container" [ngSwitch]="scoresService.isMulti">
+<div class="metric-container" [ngSwitch]="scoresService.isMulti && !scoresService.isBinary">
     <!--Multi-class table-->
     <table *ngSwitchCase="true">
       <!--Headers-->

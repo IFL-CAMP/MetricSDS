@@ -41,6 +41,7 @@ export class ScoresService {
   predictionArray: Array<number> = [];
   groundtruthArray: Array<number> = [];
   selectedScores: Array<SelectedScore> = new Array<SelectedScore>();
+  isBinary: boolean = false;
 
   constructor(
       private classService: ClassesService,

@@ -30,11 +30,12 @@ export class SurgicalPhaseComponent implements OnInit {
   constructor(
       public scoreService: ScoresService,
       public classService: ClassesService,
-      public UICtrlService: ControlUIService
+      public UICtrlService: ControlUIService,
   ) {
     if(this.scoreService.canBuild) this.buildDefaultSetup();
   }
   ngOnInit(): void {}
+
   buildDefaultSetup(){
     this.scoreService.nFrames = 99;
     this.scoreService.listPhasePrediction = new Array<Phase>(3);
@@ -100,6 +101,7 @@ export class SurgicalPhaseComponent implements OnInit {
     this.video_count = file.length;
     this.isNew = false; // disabled setup
     this.scoreService.canBuild = false;
+    this.scoreService.isBinary = false;
     if (this.video_count > 1) { //Multiple Videos
       this.scoreService.final_multi_result = new Map();
       this.isVideoUploaded = true;
@@ -167,6 +169,8 @@ export class SurgicalPhaseComponent implements OnInit {
         let repeated: Array<number> = new Array(pred_data[j]['value']).fill(dictionary[value]).flat();
         this.predictionArr = this.predictionArr.concat(repeated);
       }
+      this.scoreService.segment_arr_pred = this.predictionArr;
+      this.scoreService.segment_arr_label = this.labelArr;
       this.classService.setClasses([0, 1, 2, 3, 4, 5, 6]);
       this.scoreService.initConfMat();
       this.scoreService.updateConfusionMatrixFromArray(
@@ -219,23 +223,6 @@ export class SurgicalPhaseComponent implements OnInit {
       csv += (data1[i]) + ',' + (data2[i]) + '\n';
     }
     return csv;
-  }
-
-
-  segmentArrayPhase(array: number[]) {
-    let segments: any[] = [];
-    let currentSegment: any[] = [array[0]];
-
-    for (let i = 1; i < array.length; i++) {
-      if (array[i] === array[i - 1]) {
-        currentSegment.push(array[i]);
-      } else {
-        segments.push(currentSegment);
-        currentSegment = [array[i]];
-      }
-    }
-    segments.push(currentSegment);
-    return segments;
   }
 
   //dropdown list handler
@@ -294,6 +281,7 @@ export class SurgicalPhaseComponent implements OnInit {
       if (this.tool == 'cut') {
         let width = container.clientWidth;
         let rect = container.getBoundingClientRect();
+        console.log('rect.left -> '+rect.left);
         if('touches' in event){
           var offset = (100 * (event.touches[0].clientX - rect.left)) / width;
         }
@@ -343,9 +331,7 @@ export class SurgicalPhaseComponent implements OnInit {
   dragPhase(event: MouseEvent | TouchEvent) {
     if (this.isDragging && this.activePhase) {
       const container = document.getElementById('timephase');
-
       event.preventDefault();
-
       if (this.activePhase.next && container) {
         let width = container.clientWidth;
         if('touches' in event){

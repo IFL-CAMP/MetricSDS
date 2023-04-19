@@ -95,7 +95,7 @@ export class Stats {
     f1 = (1 + b * b) * (precision * sensitivity) / (b * b * precision + sensitivity);
     if(precision == 0 || isNaN(sensitivity) || sensitivity == 0) f1 = 0;
     if(sensitivity == 0 || isNaN(precision) || precision == 0) f1 = 0;
-    statistics.set('Accuracy', (TP + TN) / (TP + TN + FP + FN));
+    statistics.set('Accuracy', (TP + TN) / (P + N));
     statistics.set('Overall Accuracy', 0);
     statistics.set('Precision', precision);
     statistics.set('Sensitivity', sensitivity);
@@ -110,12 +110,27 @@ export class Stats {
     let P = this.sumRows[1];
     let TP = this.cm[1][1];
     let TN = this.cm[0][0];
-    let FP = N - TN;
-    let FN = (TN + FP) - (P+N);
+    let FP = this.cm[0][1];
+    let FN = this.cm[1][0];
     var statistics = Stats.getStats(P, N, TP, TN, FP, FN);
+    let precision = TP / (TP + FP + 0.001);
+    let sensitivity = TP / (P + 0.001);
+    statistics.set('Precision', precision);
+    statistics.set('Sensitivity', sensitivity);
+    statistics.set('F1', 2 * precision * sensitivity / (precision + sensitivity));
     statistics.set('Kappa', this.cohenKappa());
+    statistics.set('MCC', this.calculateMCC(TP, FP, TN, FN));
     statistics.set('IoU', TP / (P + FP));
     return statistics;
+  }
+
+   calculateMCC(truePositives: number, falsePositives: number, trueNegatives: number, falseNegatives: number): number {
+    const numerator = (truePositives * trueNegatives) - (falsePositives * falseNegatives);
+    const denominator = Math.sqrt((truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) * (trueNegatives + falseNegatives));
+    if (isNaN(denominator) || denominator === 0) {
+      return 0;
+    }
+    return numerator / denominator;
   }
 
   getMultiClassStats(): Map<string, Array<number>> {
@@ -168,6 +183,12 @@ export class Stats {
     let scores = new Array<Score>();
     if (this.n_classes == 2) {
       let stats = this.getBinaryClassStats();
+      let overall_accuracy = this.diagValues.reduce((a, b) => a+b);
+      this.total_correct_predicted += overall_accuracy;
+      this.total_video_length += this.S;
+      overall_accuracy /= this.S;
+      stats.set('Overall Accuracy', overall_accuracy);
+      stats.set('Overlap Score', Stats.getMacroAverageAll(overlap_score));
       for (const [key, value] of stats) {
         scores.push(new Score({name: key, score: value}));
       }

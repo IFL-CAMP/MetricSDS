@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { ClassesService } from 'src/app/Services/classes.service';
 import { ControlUIService } from 'src/app/Services/control-ui.service';
 import { ScoresService } from 'src/app/Services/scores.service';
@@ -15,6 +15,7 @@ export class ArrayComponent implements OnInit {
   gtArray: Array<number>;
   maxClass: number = 6;
   warningMessage: string = '';
+  @ViewChild('myTextarea') myTextareaRef: ElementRef;
 
 
   constructor(
@@ -120,6 +121,7 @@ export class ArrayComponent implements OnInit {
       return !Number.isNaN(value);
     });
     this.classService.setClasses([...Array(max_value + 1).keys()]);
+    this.scoreService.isBinary = (this.classService.classes.length == 2) ? true : false;
     this.scoreService.initConfMat();
     if (this.predArray.length > 0 && this.gtArray.length > 0 && this.predArray.length == this.gtArray.length) {
       this.scoreService.canBuild = false;
@@ -140,6 +142,8 @@ export class ArrayComponent implements OnInit {
         );
       }
       this.scoreService.buildPhaseSetup(this.predArray, this.gtArray);
+      this.scoreService.segment_arr_label = this.gtArray;
+      this.scoreService.segment_arr_pred = this.predArray;
     }
   }
 

@@ -1,10 +1,22 @@
 .video-container{
-  margin: 3em;
-  video{
-    width: 40%;
-    border-radius: 1%;
-  }
+  display: flex;
+  margin: 1em;
+  padding: 10px;
+  margin-left: 0px;
+  align-items: center;
 }
+
+.video-container .mat-form-field {
+  margin-right: 16px;
+  align-self: flex-end;
+  margin-top: auto;
+}
+
+.video-container button {
+  width: 150px; /* or any fixed width you want */
+  height: 40px; /* or any fixed height you want */
+}
+
 .download-container{
   margin: 2em;
   video{
@@ -13,9 +25,16 @@
   }
 }
 
+.flex-horizontal-container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5em;
+}
+
 .horizontal-container{
   position: relative;
-  left:0;
+  left: 0;
   right: auto;
   margin-left: -25px;
   flex-direction: row;
@@ -23,19 +42,19 @@
   height: 2.5em;
   align-items: center;
   align-content: flex-start;
-  width: 5.3%;
+  width: calc(100% + 40px);
 }
-.horizontal1-container{
+.horizontal-new-container{
   position: relative;
-  left:0;
-  margin-right: -5px;
+  left: 0;
   right: auto;
+  margin-left: -25px;
   flex-direction: row;
   flex-wrap: nowrap;
   height: 2.5em;
   align-items: center;
   align-content: flex-start;
-  width: 3.3%;
+  width: 5%;
 }
 
 .time-cursor{
