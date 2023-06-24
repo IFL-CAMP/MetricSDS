@@ -24,7 +24,7 @@ export class SurgicalPhaseComponent implements OnInit {
   tool: string = 'grab';
   @ViewChild("videoPlayer", { static: false }) videoplayer: ElementRef;
   files: any = ['dominant_class_mostly_predicted.json', 'less_dominant_prediction.json',
-    'multi_phase_missing.json', 'one_missing_label.json', 'one_missing_prediction.json', 'underperformed_overlap.json', 'data_fully_micro.json'];
+    'multi_phase_missing.json', 'one_missing_prediction.json', 'underperformed_overlap.json', 'missing_reference_prediction.json', 'multiple_video.json'];
 
 
   constructor(
@@ -94,6 +94,7 @@ export class SurgicalPhaseComponent implements OnInit {
   }
 
   loadSelectedFile(file: any) {
+    //to store specific phases that exists in cholec80 dataset
     const dictionary: { [key: string]: number } = {
       "Preparation": 0, "CalotTriangleDissection": 1, "ClippingCutting": 2, "GallbladderDissection": 3,
       "GallbladderPackaging": 4, "CleaningCoagulation": 5, "GallbladderRetraction": 6
@@ -137,10 +138,9 @@ export class SurgicalPhaseComponent implements OnInit {
         this.scoreService.groundtruthArray = first_label_arr;
         this.fillDefaultData(this.scoreService.selectedVideo, first_pred_arr, first_label_arr);
         this.scoreService.final_pred_array.set(i, this.predictionArr);
-        const uniquePredCount = new Set(this.predictionArr).size;
-        const uniqueLabelCount = new Set(this.labelArr).size;
-        const uniqueCount = Math.max(uniquePredCount, uniqueLabelCount);
-        this.classService.setClasses([...Array(uniqueCount).keys()]);
+        //set fix number to detect missing phases
+        this.classService.setClasses([0, 1, 2, 3, 4, 5, 6]);
+        this.scoreService.classNumber = this.classService.classes.length;
         this.scoreService.initConfMat();
         this.scoreService.updateConfusionMatrixFromArrayMultiVideos(
             this.predictionArr,
@@ -171,7 +171,9 @@ export class SurgicalPhaseComponent implements OnInit {
       }
       this.scoreService.segment_arr_pred = this.predictionArr;
       this.scoreService.segment_arr_label = this.labelArr;
+      //set fix number to detect missing phases
       this.classService.setClasses([0, 1, 2, 3, 4, 5, 6]);
+      this.scoreService.classNumber = this.classService.classes.length;
       this.scoreService.initConfMat();
       this.scoreService.updateConfusionMatrixFromArray(
           this.predictionArr,
@@ -229,7 +231,7 @@ export class SurgicalPhaseComponent implements OnInit {
   handleVideoSelection(event: any) {
     this.scoreService.isSelectedVideo = true;
     this.scoreService.selectedVideo = event;
-    this.scoreService.isMulti = true; //TODO:is it required for tab changing
+    this.scoreService.isMulti = true;
     let video_score = new Array<Score>();
     let item = this.scoreService.final_multi_result.get(this.scoreService.selectedVideo) || [];
     for(let i=0; i<item.length; i++) {
@@ -281,7 +283,6 @@ export class SurgicalPhaseComponent implements OnInit {
       if (this.tool == 'cut') {
         let width = container.clientWidth;
         let rect = container.getBoundingClientRect();
-        console.log('rect.left -> '+rect.left);
         if('touches' in event){
           var offset = (100 * (event.touches[0].clientX - rect.left)) / width;
         }
@@ -322,6 +323,7 @@ export class SurgicalPhaseComponent implements OnInit {
       }
     }
     if(this.scoreService.isMulti) {
+      this.scoreService.isOneUpdate = true;
       this.updateMultiVideoScore(this.scoreService.selectedVideo);
     } else {
       this.scoreService.updateVideoScore();

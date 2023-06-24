@@ -15,6 +15,7 @@ export class ArrayComponent implements OnInit {
   gtArray: Array<number>;
   maxClass: number = 6;
   warningMessage: string = '';
+  classNum: number = 0;
   @ViewChild('myTextarea') myTextareaRef: ElementRef;
 
 
@@ -30,6 +31,7 @@ export class ArrayComponent implements OnInit {
   ngOnInit(): void {
     if(this.scoreService.predictionArray.length != 0) this.predString = this.scoreService.predictionArray.join(",");
     if(this.scoreService.groundtruthArray.length != 0) this.gtString = this.scoreService.groundtruthArray.join(",");
+    if(this.scoreService.classNumber != 0 && this.scoreService.groundtruthArray.length != 0 && this.scoreService.predictionArray.length != 0) this.classNum = this.scoreService.classNumber;
     if(this.gtString.trim() != "" && this.predString.trim() != "") this.initConf();
   }
 
@@ -105,6 +107,10 @@ export class ArrayComponent implements OnInit {
           }
           return v;
         });
+
+    if(this.classNum != 0) {
+      max_value = this.classNum - 1;
+    }
 
     return max_value;
   }

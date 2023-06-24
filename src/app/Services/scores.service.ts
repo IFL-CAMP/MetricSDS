@@ -42,6 +42,7 @@ export class ScoresService {
   groundtruthArray: Array<number> = [];
   selectedScores: Array<SelectedScore> = new Array<SelectedScore>();
   isBinary: boolean = false;
+  classNumber: number = 0;
 
   constructor(
       private classService: ClassesService,
@@ -95,12 +96,13 @@ export class ScoresService {
   }
   onToggleChange() {
     if(!this.isMulti) {
+      this.oneOverlapScore = Stats.calculateOverlap(this.groundtruthArray, this.predictionArray, this.classService.classes.length);
       this.updateScore(this.oneOverlapScore);
     } else {
-      let pred = this.final_pred_array.get(this.selectedVideo) || [];
-      let gt = this.final_label_array.get(this.selectedVideo) || [];
+      this.final_pred_array.set(this.selectedVideo, this.predictionArray);
+      this.final_label_array.set(this.selectedVideo, this.groundtruthArray);
       this.isOneUpdate = true;
-      this.updateConfusionMatrixFromArrayMultiVideos(pred, gt, this.selectedVideo, this.final_multi_result.size);
+      this.updateConfusionMatrixFromArrayMultiVideos(this.predictionArray, this.groundtruthArray, this.selectedVideo, this.final_multi_result.size);
     }
   }
 
@@ -329,15 +331,17 @@ export class ScoresService {
     this.predictionArray = pred;
     this.groundtruthArray = gt;
     this.micro_overall_acc = Stats.micro_overall_acc(gt, pred);
-    this.oneOverlapScore = Stats.calculateOverlap(gt, pred);
+    this.oneOverlapScore = Stats.calculateOverlap(gt, pred, this.classService.classes.length);
     this.updateScore(this.oneOverlapScore);
   }
 
   updateConfusionMatrixFromArrayMultiVideos(pred: Array<number>, gt: Array<number>, i:number, video_count : number) {
+    this.final_label_array.set(i, gt);
+    this.final_pred_array.set(i, pred);
     this.initConfMat();
     this.computeConfMatFromArray(pred, gt, this.confusionMatrix);
     this.micro_overall_acc  = Stats.micro_overall_acc(gt, pred);
-    let overlap_scores = Stats.calculateOverlap(gt, pred);
+    let overlap_scores = Stats.calculateOverlap(gt, pred, this.classService.classes.length);
     this.calculateMultiScore(overlap_scores, i, video_count);
   }
 
@@ -386,15 +390,7 @@ export class ScoresService {
       }
       label_index = label_index + width_label;
     }
-    const uniquePredCount = new Set(prediction).size;
-    const uniqueLabelCount = new Set(label).size;
-    const uniqueCount = Math.max(uniquePredCount, uniqueLabelCount)
-    this.classService.setClasses([...Array(uniqueCount).keys()]);
     this.classService.setCurrentClass(0);
-    /*if(!this.isMulti) {
-      this.initConfMat();
-      this.updateVideoScore();
-    }*/
   }
 
   updateVideoScore() {
@@ -468,5 +464,4 @@ export class ScoresService {
     segments.push(currentSegment);
     return segments;
   }
-
 }

@@ -42,7 +42,8 @@ export class Stats {
   diagValues: Array<number>;
   mcc_nominator: number = 0;
   total_correct_predicted : number = 0;
-  total_video_length : number = 0;
+  precisionScore: number = 0;
+  sensitivityScore: number = 0;
   x: number;
   y:number;
   cohen_kappa: number;
@@ -152,8 +153,6 @@ export class Stats {
       let TN = this.S - this.union[i];
       let FP = this.sumCols[i] - this.diagValues[i];
       let FN = this.sumRows[i] - this.diagValues[i];
-      let macro_acc = 0;
-      if(TP != 0) macro_acc = TP/this.sumRows[i];
 
       this.mcc_nominator += TP * this.S - this.sumRows[i]*this.sumCols[i];
       this.x -= this.sumCols[i] * this.sumCols[i];
@@ -161,7 +160,6 @@ export class Stats {
       this.cohen_kappa -= this.sumRows[i] * this.sumCols[i];
 
       let stats = Stats.getStats(P, N, TP, TN, FP, FN);
-      stats.set('Accuracy', macro_acc);
       for (const [key, value] of stats) {
         if (!statistics.has(key)) statistics.set(key, new Array<number>());
         statistics.get(key).push(value);
@@ -185,10 +183,9 @@ export class Stats {
       let stats = this.getBinaryClassStats();
       let overall_accuracy = this.diagValues.reduce((a, b) => a+b);
       this.total_correct_predicted += overall_accuracy;
-      this.total_video_length += this.S;
       overall_accuracy /= this.S;
       stats.set('Overall Accuracy', overall_accuracy);
-      stats.set('Overlap Score', Stats.getMacroAverageAll(overlap_score));
+      stats.set('Overlap Score', Stats.getMacroAverage(overlap_score));
       for (const [key, value] of stats) {
         scores.push(new Score({name: key, score: value}));
       }
@@ -199,7 +196,6 @@ export class Stats {
 
       let overall_accuracy = this.diagValues.reduce((a, b) => a+b);
       this.total_correct_predicted += overall_accuracy;
-      this.total_video_length += this.S;
 
       overall_accuracy /= this.S;
       microStats.set('Overall Accuracy', overall_accuracy);
@@ -209,7 +205,6 @@ export class Stats {
         var weightedValues = new Array<number>();
         var avgValues = new Array<number>();
         for (let i = 0; i < value.length; i++) {
-          if (!(this.filteredIndicesFromAvg.includes(i)))
             if(!convertNaN && isNaN(value[i])) value[i] = 0;
             weightedValues.push(value[i] * this.sumRows[i]);
             avgValues.push(value[i])
@@ -218,8 +213,8 @@ export class Stats {
         if (key == 'Overlap Score') {
           let args = {
             name: 'Overlap Score',
-            perClassScore: overlap_score,
-            macroAverage: Stats.getMacroAverageAll(overlap_score),
+            perClassScore: this.convertToZero(overlap_score, convertNaN),
+            macroAverage: Stats.getMacroAverage(overlap_score),
           };
           scores.push(new Score(args));
         }
@@ -246,7 +241,7 @@ export class Stats {
           let macroAvg = Stats.getMacroAverageAll(avgValues);
           let microAvg = microStats.get(key)
 
-          if(key == 'Precision' || key == 'Sensitivity' || key == 'F1') {
+          if(key == 'Precision' || key == 'Sensitivity') {
             macroAvg = Stats.getMacroAverage(avgValues)
             microAvg = weightedValues.reduce((acc, val) => {
               if (!isNaN(val)) {
@@ -254,6 +249,8 @@ export class Stats {
               }
               return acc;
             }, 0) / this.S
+            if(key == 'Precision') this.precisionScore = microAvg;
+            if(key == 'Sensitivity') this.sensitivityScore = microAvg;
           }
 
           let args = {
@@ -269,7 +266,7 @@ export class Stats {
           let arg = {
             name: key,
             perClassScore: value,
-            macroAverage: Stats.getMacroAverageAll(avgValues),
+            macroAverage: Stats.getMacroAverage(avgValues),
           };
           let s = new Score(arg);
           scores.push(s);
@@ -277,6 +274,10 @@ export class Stats {
 
       }
       scores.push(new Score({name: 'Kappa', score: this.cohenKappa(), microAverage: this.mcc_nominator / this.cohen_kappa}));
+    }
+    const indexToUpdate = scores.findIndex(score => score.name === 'F1');
+    if (indexToUpdate !== -1) {
+      scores[indexToUpdate].microAverage = 2 * this.precisionScore * this.sensitivityScore / (this.precisionScore + this.sensitivityScore);
     }
     return scores;
   }
@@ -337,12 +338,6 @@ export class Stats {
     }
     segments.push(currentSegment);
     return segments;
-  }
-
-  //unused method
-  static fillMatrix(segPredArray: any[][], segmentArr: any[], predArray: any[], startIdx: number) {
-    segPredArray[1] = predArray;
-    segPredArray[0].splice(startIdx, segmentArr.length, ...segmentArr);
   }
 
   static segmentTraversal(segPredArray: any[][], class_: any, tmpArray: any[][], j: number, segment: any[]) {
@@ -409,10 +404,13 @@ export class Stats {
   }
 
 
-  static calculateOverlap(groundTruth: Array<number>, prediction: Array<number>) {
+  static calculateOverlap(groundTruth: Array<number>, prediction: Array<number>, classCount: number) {
     let groundTruthSet = new Set(groundTruth);
     let predictionSet = new Set(prediction);
     let overlapScoreMap = new Map<number, number>();
+    for (let classNumber = 0; classNumber < classCount; classNumber++) {
+      overlapScoreMap.set(classNumber, 0);
+    }
     let difference_pred = [...predictionSet].filter(x => !groundTruthSet.has(x));
     let difference_gt = [...groundTruthSet].filter(x => !predictionSet.has(x));
     let combined = [...new Set([...difference_pred, ...difference_gt])];
@@ -424,13 +422,11 @@ export class Stats {
 
     let groundTruthSegments = this.segmentArray(groundTruth);
 
-    let i = 1; // ROW
     let j = 0;
     let final_result = [];
 
     for(let segment of groundTruthSegments) {
       let class_type = segment[0]; //to check class type
-      let max_score = 0; // each segment
 
       let seg_pred_arr = Array(2).fill(null).map(() => Array(prediction.length).fill(null));
       let tmp_arr = Array(2).fill(null).map(() => Array(prediction.length).fill(null));
@@ -439,12 +435,27 @@ export class Stats {
       seg_pred_arr[0].splice(j, segment.length, ...segment);
 
       let score = this.segmentTraversal(seg_pred_arr, class_type, tmp_arr, j, segment);
-      overlapScoreMap.set(class_type, score);
-      //final_result.push(score);
+      const existingScore = overlapScoreMap.get(class_type);
+      if (existingScore != undefined) {
+          if (score > existingScore) {
+            overlapScoreMap.set(class_type, score);
+          } else {
+            overlapScoreMap.set(class_type, existingScore);
+          }
+        }
 
       j += segment.length;
 
     }
+
+    overlapScoreMap.forEach((value, key) => {
+      if (value === 0) {
+        let keyWithValueZero = key;
+        if(!groundTruthSet.has(keyWithValueZero) && !predictionSet.has(keyWithValueZero)) {
+          overlapScoreMap.set(keyWithValueZero, NaN);
+        }
+      }
+    });
 
     let sortedMap = new Map([...overlapScoreMap.entries()].sort((a, b) => {
       if (a[0] < b[0]) return -1;
@@ -470,7 +481,14 @@ export class Stats {
     return correctPredictions / yTrue.length;
   }
 
-
+  convertToZero(overlap_score: Array<number>, convertNaN: Boolean) {
+    if(!convertNaN) {
+      for (let i = 0; i < overlap_score.length; i++) {
+        if (!convertNaN && isNaN(overlap_score[i])) overlap_score[i] = 0;
+      }
+    }
+    return overlap_score;
+  }
 }
 
 
